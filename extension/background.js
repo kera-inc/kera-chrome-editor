@@ -34,9 +34,8 @@ function init(chrome) {
   }
 }
 
-if (window.module && window.module.exports) {
+if (typeof module !== 'undefined' && module.exports) {
   module.exports = init;
 } else {
   init(chrome);
 }
-
