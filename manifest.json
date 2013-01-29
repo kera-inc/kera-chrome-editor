@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+
+  "name": "Kera Editor",
+  "description": "Edit Kera Walkthroughs",
+  "version": "1.0",
+
+  "page_action": {
+    "default_icon": "deactive.png"
+  },
+
+  "permissions": [
+    "tabs"
+  ],
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["contentscript.js"],
+      "all_frames": false
+    }
+  ],
+
+  "content_security_policy": "script-src 'self' http://localhost:5000 https://example.com; object-src 'self'"
+}
