@@ -6,6 +6,7 @@
   "devDependencies": {
     "mocha": "1.6.0",
     "expect.js": "0.1.2",
-    "sinon": "1.5.0"
+    "sinon": "1.5.0",
+    "bay": "git+https://keradeployer:KrhUUytb6KZEGcobvN3h@github.com/kera-inc/bay.git"
   }
 }

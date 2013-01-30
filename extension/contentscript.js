@@ -1,10 +1,14 @@
 function init(chrome) {
   chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-    console.log(sender.tab ?
-                ' from a content script: ' + sender.tab.url :
-                ' from the extension');
+    var editor = require('bay');
 
-    console.log(request);
+    if (request.method == 'activate') {
+      editor.show();
+    }
+
+    if (request.method == 'deactivate') {
+      editor.hide();
+    }
   });
 }
 
