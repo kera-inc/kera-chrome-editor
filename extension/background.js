@@ -2,23 +2,36 @@ function init(chrome, XMLHttpRequest) {
   var keraActive = {}
 
   var BAY_LIB_URL = 'http://localhost:5999/bay.js';
+  var BAY_CSS_URL = 'http://localhost:5999/bay.css';
+  var bayCss;
   var bayLib;
   var scriptsLoaded = false;
   var scriptsLoadedCallbacks = [];
 
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', BAY_LIB_URL, true);
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4) {
-      bayLib = xhr.responseText;
+
+  get(BAY_LIB_URL, function(js) {
+    bayLib = js;
+
+    get(BAY_CSS_URL, function(css) {
+      bayCss = css;
+
       scriptsLoaded = true;
       scriptsLoadedCallbacks.forEach(function(callback) {
         callback();
       });
-    }
-  }
+    });
+  });
 
-  xhr.send();
+  function get(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        callback(xhr.responseText);
+      }
+    }
+    xhr.send();
+  }
 
   function injectScript(tabId, callback) {
     if (scriptsLoaded) {
@@ -31,6 +44,8 @@ function init(chrome, XMLHttpRequest) {
   }
 
   function doInject(tabId, callback) {
+    chrome.tabs.insertCSS(tabId, { code: bayCss });
+
     chrome.tabs.executeScript(tabId, { code: bayLib  }, function() {
       callback();
     });
@@ -46,7 +61,7 @@ function init(chrome, XMLHttpRequest) {
     chrome.tabs.sendMessage(tabId, { method: 'deactivate' });
   }
 
-  chrome.tabs.onUpdated.addListener(function(tabId) {
+  chrome.tabs.onUpdated.addListener(function(tabId, details) {
     injectScript(tabId, function() {
       chrome.pageAction.show(tabId);
 

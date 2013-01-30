@@ -10,7 +10,8 @@ describe('Background', function() {
 
   var xhr
     , xhrInstance
-    , bayLib = 'library';
+    , bayLib = 'library'
+    , bayCss = 'stylesheet';
 
   function expectActive(tabId) {
     expect(chrome.pageAction.setIcon.calledWith({ tabId: tabId, path: 'active.png' })).to.equal(true);
@@ -27,9 +28,14 @@ describe('Background', function() {
     chrome.pageAction.show = sinon.spy();
     chrome.tabs.sendMessage = sinon.spy();
     chrome.tabs.executeScript = function(id, details, callback) {
-      expect(tabId).to.equal(id);
+      expect(id).to.equal(tabId);
       expect(details.code).to.equal(bayLib);
       callback();
+    }
+
+    chrome.tabs.insertCSS = function(id, details) {
+      expect(id).to.equal(tabId);
+      expect(details.code).to.equal(bayCss);
     }
 
     onUpdatedAddListenerCallback(tabId);
@@ -65,7 +71,6 @@ describe('Background', function() {
     xhr.prototype = {
       open: function(method, url, async) {
         expect(method).to.equal('GET');
-        expect(url).to.equal('http://localhost:5999/bay.js');
         expect(async).to.equal(true);
       },
       send: function() {
@@ -80,6 +85,10 @@ describe('Background', function() {
   describe('xhr has loaded the library', function() {
     beforeEach(function() {
       xhrInstance.responseText = bayLib;
+      xhrInstance.readyState = 4;
+      xhrInstance.onreadystatechange();
+
+      xhrInstance.responseText = bayCss;
       xhrInstance.readyState = 4;
       xhrInstance.onreadystatechange();
     });
