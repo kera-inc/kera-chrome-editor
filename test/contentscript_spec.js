@@ -1,13 +1,17 @@
 describe('ContentScript', function() {
-  var sinon = require('sinon');
-  var expect = require('expect.js');
-  var contentscript = require('../extension/contentscript.js');
+  var sinon = require('sinon')
+    , expect = require('expect.js')
+    , contentscript = require('../extension/contentscript.js')
+    , bay = require('bay');
 
   var chrome
     , onMessageAddListenerCallback;
 
-  it('does stuff', function() {
+  function requestMethod(method) {
+    onMessageAddListenerCallback({ method: method });
+  }
 
+  beforeEach(function() {
     chrome = {
       extension: {
         onMessage: {
@@ -19,6 +23,27 @@ describe('ContentScript', function() {
     }
 
     contentscript(chrome);
-    onMessageAddListenerCallback({ message: 'BOO' }, { tab: { url: 'www.google.com' } }, function() {});
+  });
+
+  describe('when activated', function() {
+    beforeEach(function() {
+      bay.show = sinon.spy();
+      requestMethod('activate');
+    });
+
+    it('calls editor.show', function() {
+      expect(bay.show.called).to.equal(true);
+    });
+  });
+
+  describe('when deactivated', function() {
+    beforeEach(function() {
+      bay.hide = sinon.spy();
+      requestMethod('deactivate');
+    });
+
+    it('calls editor.hide', function() {
+      expect(bay.hide.called).to.equal(true);
+    });
   });
 });
