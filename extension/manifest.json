@@ -10,7 +10,9 @@
   },
 
   "permissions": [
-    "tabs"
+    "tabs",
+    "http://*/*",
+    "https://*/*"
   ],
 
   "background": {
@@ -25,5 +27,5 @@
     }
   ],
 
-  "content_security_policy": "script-src 'self' http://localhost:5000 https://example.com; object-src 'self'"
+  "content_security_policy": "script-src 'self' http://localhost https://example.com; object-src 'self'"
 }
