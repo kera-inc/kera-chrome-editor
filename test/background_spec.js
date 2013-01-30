@@ -10,6 +10,7 @@ describe('Background', function() {
 
   var xhr
     , xhrInstance
+    , angularLib = 'angular'
     , bayLib = 'library'
     , bayCss = 'stylesheet';
 
@@ -29,7 +30,7 @@ describe('Background', function() {
     chrome.tabs.sendMessage = sinon.spy();
     chrome.tabs.executeScript = function(id, details, callback) {
       expect(id).to.equal(tabId);
-      expect(details.code).to.equal(bayLib);
+      expect(details.code).to.equal(angularLib + bayLib);
       callback();
     }
 
@@ -84,6 +85,10 @@ describe('Background', function() {
 
   describe('xhr has loaded the library', function() {
     beforeEach(function() {
+      xhrInstance.responseText = angularLib;
+      xhrInstance.readyState = 4;
+      xhrInstance.onreadystatechange();
+
       xhrInstance.responseText = bayLib;
       xhrInstance.readyState = 4;
       xhrInstance.onreadystatechange();

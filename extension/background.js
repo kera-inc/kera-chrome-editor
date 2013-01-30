@@ -1,26 +1,31 @@
 function init(chrome, XMLHttpRequest) {
   var keraActive = {}
+    , ANGULAR_URL = 'http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js'
+    , BAY_LIB_URL = 'http://localhost:5999/bay.js'
+    , BAY_CSS_URL = 'http://localhost:5999/bay.css'
+    , bayCss
+    , bayLib
+    , angularLib
+    , scriptsLoaded = false
+    , scriptsLoadedCallbacks = [];
 
-  var BAY_LIB_URL = 'http://localhost:5999/bay.js';
-  var BAY_CSS_URL = 'http://localhost:5999/bay.css';
-  var bayCss;
-  var bayLib;
-  var scriptsLoaded = false;
-  var scriptsLoadedCallbacks = [];
+  get(ANGULAR_URL, function(angular) {
+    angularLib = angular;
 
+    get(BAY_LIB_URL, function(js) {
+      bayLib = js;
 
-  get(BAY_LIB_URL, function(js) {
-    bayLib = js;
+      get(BAY_CSS_URL, function(css) {
+        bayCss = css;
 
-    get(BAY_CSS_URL, function(css) {
-      bayCss = css;
-
-      scriptsLoaded = true;
-      scriptsLoadedCallbacks.forEach(function(callback) {
-        callback();
+        scriptsLoaded = true;
+        scriptsLoadedCallbacks.forEach(function(callback) {
+          callback();
+        });
       });
     });
   });
+
 
   function get(url, callback) {
     var xhr = new XMLHttpRequest();
@@ -46,7 +51,7 @@ function init(chrome, XMLHttpRequest) {
   function doInject(tabId, callback) {
     chrome.tabs.insertCSS(tabId, { code: bayCss });
 
-    chrome.tabs.executeScript(tabId, { code: bayLib  }, function() {
+    chrome.tabs.executeScript(tabId, { code: angularLib + bayLib  }, function() {
       callback();
     });
   }
