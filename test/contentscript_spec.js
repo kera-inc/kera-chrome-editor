@@ -8,10 +8,10 @@ describe('ContentScript', function() {
   var chrome
     , onMessageAddListenerCallback;
 
-  function requestMethod(method, apiKey) {
+  function requestMethod(method, environment, apiKey) {
     var loggedIn = (apiKey) ? true : false;
 
-    onMessageAddListenerCallback({ method: method, logged_in: loggedIn, apiKey: apiKey });
+    onMessageAddListenerCallback({ method: method, CHROME_ENV: environment, logged_in: loggedIn, apiKey: apiKey });
   }
 
   function editorDispatches(eventName) {
@@ -68,15 +68,25 @@ describe('ContentScript', function() {
   describe('when activated and logged in', function() {
     var apiKey = 'abc123';
     beforeEach(function() {
-      requestMethod('activate', apiKey);
+      requestMethod('activate', 'development', apiKey);
     });
 
     it('calls editor.show', function() {
-      expect(editor.show.called).to.equal(true);
+      expect(editor.show.calledWith('development')).to.equal(true);
     });
 
     it('calls editor.login and passes in apiKey', function() {
       expect(editor.login.calledWith(apiKey)).to.equal(true);
+    });
+  });
+
+  describe('when activated in production', function() {
+    beforeEach(function() {
+      requestMethod('activate', 'production');
+    });
+
+    it('calls editor.show with production', function() {
+      expect(editor.show.calledWith('production')).to.equal(true);
     });
   });
 

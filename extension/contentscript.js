@@ -5,7 +5,7 @@ function init(chrome, editor) {
     }
 
     if (request.method == 'activate') {
-      editor.show();
+      editor.show(request.CHROME_ENV);
 
       if (request.logged_in == true) {
         editor.login(request.apiKey);
