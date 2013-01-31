@@ -10,13 +10,14 @@
   },
 
   "permissions": [
+    "storage",
     "tabs",
     "http://*/*",
     "https://*/*"
   ],
 
   "background": {
-    "scripts": ["background.js"]
+    "page": "background.html"
   },
 
   "content_scripts": [
