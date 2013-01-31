@@ -28,5 +28,5 @@
     }
   ],
 
-  "content_security_policy": "script-src 'self' http://localhost https://example.com; object-src 'self'"
+  "content_security_policy": "script-src 'self' http://localhost https://ajax.googleapis.com; object-src 'self'"
 }

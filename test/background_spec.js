@@ -56,6 +56,25 @@ describe('Background', function() {
     messageCb(message, 'sender', callback || function(){});
   }
 
+  function librariesLoaded() {
+    xhrInstance.responseText = angularLib;
+    xhrInstance.readyState = 4;
+    xhrInstance.onreadystatechange();
+
+    xhrInstance.responseText = bayLib;
+    xhrInstance.readyState = 4;
+    xhrInstance.onreadystatechange();
+
+    xhrInstance.responseText = bayCss;
+    xhrInstance.readyState = 4;
+    xhrInstance.onreadystatechange();
+  }
+
+  function reloadEnvironment() {
+    xhrUrls = [];
+    background(chrome, xhr, requestLogin, ENV);
+  }
+
   // STUBBING VARIABLES
   var chrome
     , addEventListenerCallback
@@ -66,6 +85,7 @@ describe('Background', function() {
 
   var xhr
     , xhrInstance
+    , xhrUrls
     , angularLib = 'angular'
     , bayLib = 'library'
     , bayCss = 'stylesheet';
@@ -73,6 +93,7 @@ describe('Background', function() {
   var requestLogin
     , requestLoginCallback;
 
+  var ENV;
 
   beforeEach(function() {
     loggedInKey = undefined;
@@ -118,6 +139,7 @@ describe('Background', function() {
 
     xhr.prototype = {
       open: function(method, url, async) {
+        xhrUrls.push(url);
         expect(method).to.equal('GET');
         expect(async).to.equal(true);
       },
@@ -128,23 +150,36 @@ describe('Background', function() {
 
     requestLogin = sinon.spy();
 
-    background(chrome, xhr, requestLogin);
-  });
+    ENV = {
+      CHROME_ENV: 'development'
+    }
 
+    reloadEnvironment();
+  });
 
   describe('xhr has loaded the library', function() {
     beforeEach(function() {
-      xhrInstance.responseText = angularLib;
-      xhrInstance.readyState = 4;
-      xhrInstance.onreadystatechange();
+      librariesLoaded();
+    });
 
-      xhrInstance.responseText = bayLib;
-      xhrInstance.readyState = 4;
-      xhrInstance.onreadystatechange();
+    it('uses the proper xhr urls', function() {
+      expect(xhrUrls[0]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js');
+      expect(xhrUrls[1]).to.equal('http://localhost:5999/bay.js');
+      expect(xhrUrls[2]).to.equal('http://localhost:5999/bay.css');
+    });
 
-      xhrInstance.responseText = bayCss;
-      xhrInstance.readyState = 4;
-      xhrInstance.onreadystatechange();
+    describe('when CHROME_ENV is production', function() {
+      beforeEach(function() {
+        ENV.CHROME_ENV = 'production';
+        reloadEnvironment();
+        librariesLoaded();
+      });
+
+      it('uses the production urls', function() {
+        expect(xhrUrls[0]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js');
+        expect(xhrUrls[1]).to.equal('https://www.something.com/bay.js');
+        expect(xhrUrls[2]).to.equal('https://www.something.com/bay.css');
+      });
     });
 
     describe('tab updating', function() {

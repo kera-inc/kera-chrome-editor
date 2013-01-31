@@ -1,8 +1,21 @@
-function init(chrome, XMLHttpRequest, requestLogin) {
+function init(chrome, XMLHttpRequest, requestLogin, ENV) {
+
+  var URLs = {
+    production: {
+      BAY_LIB: 'https://www.something.com/bay.js',
+      BAY_CSS: 'https://www.something.com/bay.css'
+    },
+
+    development: {
+      BAY_LIB: 'http://localhost:5999/bay.js',
+      BAY_CSS: 'http://localhost:5999/bay.css'
+    }
+  };
+
   var keraActive = {}
-    , ANGULAR_URL = 'http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js'
-    , BAY_LIB_URL = 'http://localhost:5999/bay.js'
-    , BAY_CSS_URL = 'http://localhost:5999/bay.css'
+    , ANGULAR_URL = 'https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js'
+    , BAY_LIB_URL = URLs[ENV.CHROME_ENV].BAY_LIB
+    , BAY_CSS_URL = URLs[ENV.CHROME_ENV].BAY_CSS
     , bayCss
     , bayLib
     , angularLib
@@ -113,5 +126,5 @@ function init(chrome, XMLHttpRequest, requestLogin) {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = init;
 } else {
-  init(chrome, XMLHttpRequest, requestLogin);
+  init(chrome, XMLHttpRequest, requestLogin, ENV);
 }
