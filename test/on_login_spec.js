@@ -58,7 +58,7 @@ describe('OnLogin', function() {
       });
 
       it('checks the body for the api key', function() {
-        expect(script).to.equal('document.body.getAttribute("kera-api-key")');
+        expect(script).to.equal('document.body.getAttribute("kera-api-key") + ":::" + document.body.getAttribute("kera-app-id")');
       });
 
       it('calls the callback passing in the api key', function() {
