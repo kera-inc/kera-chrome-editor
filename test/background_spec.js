@@ -10,11 +10,11 @@ describe('Background', function() {
 
   function expectDeactive(tabId) {
     expect(chrome.pageAction.setIcon.calledWith({ tabId: tabId, path: 'deactive.png' })).to.equal(true);
-    expect(chrome.tabs.sendMessage.calledWith(tabId, { method: 'deactivate' })).to.equal(true);
+    expect(chrome.tabs.sendMessage.calledWith(tabId, { method: 'deactivate', CHROME_ENV: ENV.CHROME_ENV })).to.equal(true);
   }
 
   function expectLoggedInMessage(tabId, loggedIn, apiKey) {
-    expect(chrome.tabs.sendMessage.calledWith(tabId, { method: 'activate', logged_in: loggedIn, apiKey: apiKey })).to.equal(true);
+    expect(chrome.tabs.sendMessage.calledWith(tabId, { method: 'activate', logged_in: loggedIn, apiKey: apiKey, CHROME_ENV: ENV.CHROME_ENV })).to.equal(true);
   }
 
   // ACTIONS

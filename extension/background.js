@@ -82,7 +82,7 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV) {
 
   function deactivate(tabId) {
     chrome.pageAction.setIcon({ tabId: tabId, path: 'deactive.png' });
-    chrome.tabs.sendMessage(tabId, { method: 'deactivate' });
+    chrome.tabs.sendMessage(tabId, { method: 'deactivate', CHROME_ENV: ENV.CHROME_ENV });
   }
 
   function activate(tabId) {
@@ -90,7 +90,7 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV) {
 
     chrome.storage.sync.get('apiKey', function(results) {
       var logged_in = (results.apiKey) ? true : false;
-      chrome.tabs.sendMessage(tabId, { method: 'activate', logged_in: logged_in, apiKey: results.apiKey });
+      chrome.tabs.sendMessage(tabId, { method: 'activate', logged_in: logged_in, apiKey: results.apiKey, CHROME_ENV: ENV.CHROME_ENV });
     });
   }
 
