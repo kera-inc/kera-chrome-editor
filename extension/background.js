@@ -1,4 +1,4 @@
-function init(chrome, XMLHttpRequest) {
+function init(chrome, XMLHttpRequest, requestLogin) {
   var keraActive = {}
     , ANGULAR_URL = 'http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js'
     , BAY_LIB_URL = 'http://localhost:5999/bay.js'
@@ -26,7 +26,6 @@ function init(chrome, XMLHttpRequest) {
     });
   });
 
-
   function get(url, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -37,6 +36,18 @@ function init(chrome, XMLHttpRequest) {
     }
     xhr.send();
   }
+
+  chrome.tabs.onUpdated.addListener(function(tabId, details) {
+    injectScript(tabId, function() {
+      chrome.pageAction.show(tabId);
+
+      if (!keraActive[tabId]) {
+        deactivate(tabId);
+      } else {
+        activate(tabId);
+      }
+    });
+  });
 
   function injectScript(tabId, callback) {
     if (scriptsLoaded) {
@@ -56,27 +67,19 @@ function init(chrome, XMLHttpRequest) {
     });
   }
 
-  function activate(tabId) {
-    chrome.pageAction.setIcon({ tabId: tabId, path: 'active.png' });
-    chrome.tabs.sendMessage(tabId, { method: 'activate' });
-  }
-
   function deactivate(tabId) {
     chrome.pageAction.setIcon({ tabId: tabId, path: 'deactive.png' });
     chrome.tabs.sendMessage(tabId, { method: 'deactivate' });
   }
 
-  chrome.tabs.onUpdated.addListener(function(tabId, details) {
-    injectScript(tabId, function() {
-      chrome.pageAction.show(tabId);
+  function activate(tabId) {
+    chrome.pageAction.setIcon({ tabId: tabId, path: 'active.png' });
 
-      if (!keraActive[tabId]) {
-        deactivate(tabId);
-      } else {
-        activate(tabId);
-      }
+    chrome.storage.sync.get('apiKey', function(results) {
+      var logged_in = (results.apiKey) ? true : false;
+      chrome.tabs.sendMessage(tabId, { method: 'activate', logged_in: logged_in, apiKey: results.apiKey });
     });
-  });
+  }
 
   chrome.pageAction.onClicked.addListener(function(event) {
     var tabId = event.id;
@@ -89,10 +92,26 @@ function init(chrome, XMLHttpRequest) {
       deactivate(tabId);
     }
   });
+
+  chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request == 'requestLogin') {
+      requestLogin(function(apiKey) {
+        chrome.storage.sync.set({'apiKey': apiKey});
+        sendResponse(apiKey);
+      });
+    }
+
+    if (request == 'logout') {
+      chrome.storage.sync.remove('apiKey');
+    }
+
+    return true;
+  });
+
 }
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = init;
 } else {
-  init(chrome, XMLHttpRequest);
+  init(chrome, XMLHttpRequest, requestLogin);
 }
