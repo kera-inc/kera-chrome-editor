@@ -15,10 +15,15 @@ describe('RequestLogin', function() {
     return popupDetails;
   }
 
+  function reloadEnvironment() {
+    requestLogin = init(chrome, onLogin, ENV);
+  }
+
   // STUBBING VARIABLES
   var chrome
     , requestLogin
-    , onLogin;
+    , onLogin
+    , ENV;
 
   beforeEach(function() {
     chrome = {
@@ -30,7 +35,25 @@ describe('RequestLogin', function() {
 
     onLogin = sinon.spy();
 
-    requestLogin = init(chrome, onLogin);
+    ENV = {
+      CHROME_ENV: 'development'
+    }
+
+    reloadEnvironment();
+  });
+
+  describe('when the login window appears in production', function() {
+    var popupDetails;
+
+    beforeEach(function() {
+      ENV.CHROME_ENV = 'production';
+      reloadEnvironment();
+      popupDetails = loadPopup({ width: 1000, height: 1000 }, function() {});
+    });
+
+    it('visits the production kera chrome auth page', function() {
+      expect(popupDetails.url).to.equal('https://www.kera.io/auth/chrome');
+    });
   });
 
   describe('when the login window appears', function() {
