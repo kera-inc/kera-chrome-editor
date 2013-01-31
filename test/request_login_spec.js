@@ -48,8 +48,8 @@ describe('RequestLogin', function() {
       popupDetails = loadPopup(activeWindow, requestLoginCallback);
     });
 
-    it('visits the kera bay auth page', function() {
-      expect(popupDetails.url).to.equal('http://localhost:5000/auth/bay');
+    it('visits the kera chrome auth page', function() {
+      expect(popupDetails.url).to.equal('http://localhost:5000/auth/chrome');
     });
 
     it('positions in the center of the current window', function() {

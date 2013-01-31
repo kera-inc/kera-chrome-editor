@@ -14,7 +14,7 @@ function init(chrome, onLogin) {
   function getPopupDetails(activeWindow) {
     var popupWidth  = 500
     , popupHeight = 300
-    , url = 'http://localhost:5000/auth/bay'
+    , url = 'http://localhost:5000/auth/chrome'
     , left = (activeWindow.width / 2) - (popupWidth / 2)
     , top  = (activeWindow.height / 2) - (popupHeight / 2);
 
