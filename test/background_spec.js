@@ -24,7 +24,7 @@ describe('Background', function() {
     chrome.tabs.sendMessage = sinon.spy();
     chrome.tabs.executeScript = function(id, details, callback) {
       expect(id).to.equal(tabId);
-      expect(details.code).to.equal(angularLib + bayLib);
+      expect(details.code).to.equal(angularLib + angularResourceLib + bayLib);
       callback();
     }
 
@@ -61,6 +61,10 @@ describe('Background', function() {
     xhrInstance.readyState = 4;
     xhrInstance.onreadystatechange();
 
+    xhrInstance.responseText = angularResourceLib;
+    xhrInstance.readyState = 4;
+    xhrInstance.onreadystatechange();
+
     xhrInstance.responseText = bayLib;
     xhrInstance.readyState = 4;
     xhrInstance.onreadystatechange();
@@ -87,6 +91,7 @@ describe('Background', function() {
     , xhrInstance
     , xhrUrls
     , angularLib = 'angular'
+    , angularResourceLib = 'angular-resource'
     , bayLib = 'library'
     , bayCss = 'stylesheet';
 
@@ -164,8 +169,9 @@ describe('Background', function() {
 
     it('uses the proper xhr urls', function() {
       expect(xhrUrls[0]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js');
-      expect(xhrUrls[1]).to.equal('http://localhost:5999/bay.js');
-      expect(xhrUrls[2]).to.equal('http://localhost:5999/bay.css');
+      expect(xhrUrls[1]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular-resource.js');
+      expect(xhrUrls[2]).to.equal('http://localhost:5999/bay.js');
+      expect(xhrUrls[3]).to.equal('http://localhost:5999/bay.css');
     });
 
     describe('when CHROME_ENV is production', function() {
@@ -177,8 +183,9 @@ describe('Background', function() {
 
       it('uses the production urls', function() {
         expect(xhrUrls[0]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js');
-        expect(xhrUrls[1]).to.equal('https://www.something.com/bay.js');
-        expect(xhrUrls[2]).to.equal('https://www.something.com/bay.css');
+        expect(xhrUrls[1]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular-resource.js');
+        expect(xhrUrls[2]).to.equal('https://www.something.com/bay.js');
+        expect(xhrUrls[3]).to.equal('https://www.something.com/bay.css');
       });
     });
 
