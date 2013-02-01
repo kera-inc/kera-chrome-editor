@@ -13,8 +13,8 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV) {
   };
 
   var keraActive = {}
-    , ANGULAR_URL = 'https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js'
-    , ANGULAR_RESOURCE_URL = 'https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular-resource.js'
+    , ANGULAR_URL = 'http://localhost:5999/javascripts/angular.min.js'
+    , ANGULAR_RESOURCE_URL = 'http://localhost:5999/javascripts/angular-resource.js'
     , BAY_LIB_URL = URLs[ENV.CHROME_ENV].BAY_LIB
     , BAY_CSS_URL = URLs[ENV.CHROME_ENV].BAY_CSS
     , bayCss

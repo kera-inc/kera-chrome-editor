@@ -168,8 +168,8 @@ describe('Background', function() {
     });
 
     it('uses the proper xhr urls', function() {
-      expect(xhrUrls[0]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js');
-      expect(xhrUrls[1]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular-resource.js');
+      expect(xhrUrls[0]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.1.2/angular.min.js');
+      expect(xhrUrls[1]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.1.2/angular-resource.js');
       expect(xhrUrls[2]).to.equal('http://localhost:5999/bay.js');
       expect(xhrUrls[3]).to.equal('http://localhost:5999/bay.css');
     });
@@ -182,8 +182,8 @@ describe('Background', function() {
       });
 
       it('uses the production urls', function() {
-        expect(xhrUrls[0]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js');
-        expect(xhrUrls[1]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular-resource.js');
+        expect(xhrUrls[0]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.1.2/angular.min.js');
+        expect(xhrUrls[1]).to.equal('https://ajax.googleapis.com/ajax/libs/angularjs/1.1.2/angular-resource.js');
         expect(xhrUrls[2]).to.equal('https://www.something.com/bay.js');
         expect(xhrUrls[3]).to.equal('https://www.something.com/bay.css');
       });
