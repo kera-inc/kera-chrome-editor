@@ -2,19 +2,23 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV) {
 
   var URLs = {
     production: {
+      ANGULAR: 'https://www.something.com/javascripts/angular.min.js',
+      ANGULAR_RESOURCE: 'https://www.something.com/javascripts/angular-resource.js',
       BAY_LIB: 'https://www.something.com/bay.js',
       BAY_CSS: 'https://www.something.com/bay.css'
     },
 
     development: {
+      ANGULAR: 'http://localhost:5999/javascripts/angular.min.js',
+      ANGULAR_RESOURCE: 'http://localhost:5999/javascripts/angular-resource.js',
       BAY_LIB: 'http://localhost:5999/bay.js',
       BAY_CSS: 'http://localhost:5999/bay.css'
     }
   };
 
   var keraActive = {}
-    , ANGULAR_URL = 'http://localhost:5999/javascripts/angular.min.js'
-    , ANGULAR_RESOURCE_URL = 'http://localhost:5999/javascripts/angular-resource.js'
+    , ANGULAR_URL = URLs[ENV.CHROME_ENV].ANGULAR
+    , ANGULAR_RESOURCE_URL = URLs[ENV.CHROME_ENV].ANGULAR_RESOURCE
     , BAY_LIB_URL = URLs[ENV.CHROME_ENV].BAY_LIB
     , BAY_CSS_URL = URLs[ENV.CHROME_ENV].BAY_CSS
     , bayCss
