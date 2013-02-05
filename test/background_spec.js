@@ -33,7 +33,7 @@ describe('Background', function() {
       expect(details.code).to.equal(bayCss);
     }
 
-    onUpdatedAddListenerCallback(tabId);
+    onUpdatedAddListenerCallback(tabId, { status: 'complete' });
   }
 
   function clickPageAction(tabId) {

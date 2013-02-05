@@ -61,6 +61,9 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV) {
   }
 
   chrome.tabs.onUpdated.addListener(function(tabId, details) {
+    if (details.status != "complete")
+      return;
+
     injectScript(tabId, function() {
       chrome.pageAction.show(tabId);
 
