@@ -22,8 +22,8 @@ function init(chrome, onLogin, ENV) {
   function getPopupDetails(activeWindow) {
     var popupWidth  = 500
     , popupHeight = 300
-    , left = (activeWindow.width / 2) - (popupWidth / 2)
-    , top  = (activeWindow.height / 2) - (popupHeight / 2);
+    , left = Math.floor((activeWindow.width / 2) - (popupWidth / 2))
+    , top  = Math.floor((activeWindow.height / 2) - (popupHeight / 2));
 
     return {
       url: authUrl,

@@ -63,8 +63,8 @@ describe('RequestLogin', function() {
 
     beforeEach(function() {
       activeWindow = {
-        width: 1000,
-        height: 1000
+        width: 999,
+        height: 999
       };
 
       requestLoginCallback = sinon.spy();
@@ -76,8 +76,13 @@ describe('RequestLogin', function() {
     });
 
     it('positions in the center of the current window', function() {
-      expect(popupDetails.left).to.equal( (activeWindow.width / 2) - (popupDetails.width / 2) );
-      expect(popupDetails.top).to.equal( (activeWindow.height / 2) - (popupDetails.height / 2) );
+      expect(popupDetails.left).to.equal( Math.floor((activeWindow.width / 2) - (popupDetails.width / 2)) );
+      expect(popupDetails.top).to.equal( Math.floor((activeWindow.height / 2) - (popupDetails.height / 2)) );
+    });
+
+    it('only returns ints for left and top', function() {
+      expect(popupDetails.left).to.equal(249);
+      expect(popupDetails.top).to.equal(349);
     });
 
     it('is a popup type', function() {
