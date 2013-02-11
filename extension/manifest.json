@@ -1,32 +1,23 @@
 {
   "manifest_version": 2,
-
   "name": "Kera Editor",
   "description": "Edit Kera Walkthroughs",
-  "version": "1.0",
-
+  "version": "1.0.4",
   "page_action": {
     "default_icon": "deactive.png"
   },
-
   "permissions": [
     "storage",
     "tabs",
-    "http://*/*",
-    "https://*/*"
+    "<all_urls>"
   ],
-
   "background": {
     "page": "background.html"
   },
-
-  "content_scripts": [
-    {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["contentscript.js"],
-      "all_frames": false
-    }
-  ],
-
-  "content_security_policy": "script-src 'self' http://localhost https://ajax.googleapis.com; object-src 'self'"
+  "content_scripts": [{
+    "matches": ["http://*/*", "https://*/*"],
+    "js": ["contentscript.js"],
+    "all_frames": false
+  }],
+  "content_security_policy": "script-src 'self' https://s3.amazonaws.com http://localhost; object-src 'self'"
 }
