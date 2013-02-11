@@ -182,10 +182,10 @@ describe('Background', function() {
       });
 
       it('uses the production urls', function() {
-        expect(xhrUrls[0]).to.equal('https://www.something.com/javascripts/angular.min.js');
-        expect(xhrUrls[1]).to.equal('https://www.something.com/javascripts/angular-resource.js');
-        expect(xhrUrls[2]).to.equal('https://www.something.com/bay.js');
-        expect(xhrUrls[3]).to.equal('https://www.something.com/bay.css');
+        expect(xhrUrls[0]).to.equal('https://s3.amazonaws.com/kera-store/bay/javascripts/angular.min.js');
+        expect(xhrUrls[1]).to.equal('https://s3.amazonaws.com/kera-store/bay/javascripts/angular-resource.js');
+        expect(xhrUrls[2]).to.equal('https://s3.amazonaws.com/kera-store/bay/build.js');
+        expect(xhrUrls[3]).to.equal('https://s3.amazonaws.com/kera-store/bay/build.css');
       });
     });
 
