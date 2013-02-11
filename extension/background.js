@@ -2,10 +2,10 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV) {
 
   var URLs = {
     production: {
-      ANGULAR: 'https://www.something.com/javascripts/angular.min.js',
-      ANGULAR_RESOURCE: 'https://www.something.com/javascripts/angular-resource.js',
-      BAY_LIB: 'https://www.something.com/bay.js',
-      BAY_CSS: 'https://www.something.com/bay.css'
+      ANGULAR: 'https://s3.amazonaws.com/kera-store/bay/javascripts/angular.min.js',
+      ANGULAR_RESOURCE: 'https://s3.amazonaws.com/kera-store/bay/javascripts/angular-resource.js',
+      BAY_LIB: 'https://s3.amazonaws.com/kera-store/bay/build.js',
+      BAY_CSS: 'https://s3.amazonaws.com/kera-store/bay/build.css'
     },
 
     development: {
