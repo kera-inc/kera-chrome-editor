@@ -1,11 +1,10 @@
-function init(chrome, XMLHttpRequest, requestLogin, ENV) {
-
+function init(chrome, XMLHttpRequest, requestLogin, ENV, async) {
   var URLs = {
     production: {
-      ANGULAR: 'https://s3.amazonaws.com/kera-store/bay/javascripts/angular.min.js',
-      ANGULAR_RESOURCE: 'https://s3.amazonaws.com/kera-store/bay/javascripts/angular-resource.js',
-      BAY_LIB: 'https://s3.amazonaws.com/kera-store/bay/build.js',
-      BAY_CSS: 'https://s3.amazonaws.com/kera-store/bay/build.css'
+      ANGULAR: 'https://s3.amazonaws.com/kera-store/bay/1.0.1/javascripts/angular.min.js',
+      ANGULAR_RESOURCE: 'https://s3.amazonaws.com/kera-store/bay/1.0.1/javascripts/angular-resource.js',
+      BAY_LIB: 'https://s3.amazonaws.com/kera-store/bay/1.0.1/build.js',
+      BAY_CSS: 'https://s3.amazonaws.com/kera-store/bay/1.0.1/build.css'
     },
 
     development: {
@@ -17,47 +16,47 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV) {
   };
 
   var keraActive = {}
-    , ANGULAR_URL = URLs[ENV.CHROME_ENV].ANGULAR
-    , ANGULAR_RESOURCE_URL = URLs[ENV.CHROME_ENV].ANGULAR_RESOURCE
-    , BAY_LIB_URL = URLs[ENV.CHROME_ENV].BAY_LIB
-    , BAY_CSS_URL = URLs[ENV.CHROME_ENV].BAY_CSS
-    , bayCss
-    , bayLib
     , angularLib
     , angularResourceLib
+    , bayCss
+    , bayLib
     , scriptsLoaded = false
     , scriptsLoadedCallbacks = [];
 
-  get(ANGULAR_URL, function(angular) {
-    angularLib = angular;
+    async.map(['ANGULAR', 'ANGULAR_RESOURCE', 'BAY_LIB', 'BAY_CSS'], get, function(err, results) {
+      if (err) {
+        console.error(err);
+        return;
+      }
 
-    get(ANGULAR_RESOURCE_URL, function(angularResource) {
-      angularResourceLib = angularResource;
+      saveLibs(results);
 
-      get(BAY_LIB_URL, function(js) {
-        bayLib = js;
-
-        get(BAY_CSS_URL, function(css) {
-          bayCss = css;
-
-          scriptsLoaded = true;
-          scriptsLoadedCallbacks.forEach(function(callback) {
-            callback();
-          });
-        });
+      scriptsLoaded = true;
+      scriptsLoadedCallbacks.forEach(function(callback) {
+        callback();
       });
     });
-  });
 
-  function get(url, callback) {
+    function saveLibs(results) {
+      angularLib = results[0];
+      angularResourceLib = results[1];
+      bayLib = results[2];
+      bayCss = results[3];
+    }
+
+  function get(keyword, callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
+    xhr.open('GET', getUrl(keyword), true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
-        callback(xhr.responseText);
+        callback(null, xhr.responseText);
       }
     }
     xhr.send();
+  }
+
+  function getUrl(keyword) {
+    return URLs[ENV.CHROME_ENV][keyword];
   }
 
   chrome.tabs.onUpdated.addListener(function(tabId, details) {
@@ -120,6 +119,8 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV) {
   });
 
   chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+    debugger;
+
     if (request == 'requestLogin') {
       requestLogin(function(apiKey) {
         chrome.storage.sync.set({'apiKey': apiKey});
@@ -139,5 +140,5 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV) {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = init;
 } else {
-  init(chrome, XMLHttpRequest, requestLogin, ENV);
+  init(chrome, XMLHttpRequest, requestLogin, ENV, async);
 }

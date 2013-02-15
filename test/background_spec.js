@@ -57,26 +57,26 @@ describe('Background', function() {
   }
 
   function librariesLoaded() {
-    xhrInstance.responseText = angularLib;
-    xhrInstance.readyState = 4;
-    xhrInstance.onreadystatechange();
+    xhrInstances[0].responseText = angularLib;
+    xhrInstances[0].readyState = 4;
+    xhrInstances[0].onreadystatechange();
 
-    xhrInstance.responseText = angularResourceLib;
-    xhrInstance.readyState = 4;
-    xhrInstance.onreadystatechange();
+    xhrInstances[1].responseText = angularResourceLib;
+    xhrInstances[1].readyState = 4;
+    xhrInstances[1].onreadystatechange();
 
-    xhrInstance.responseText = bayLib;
-    xhrInstance.readyState = 4;
-    xhrInstance.onreadystatechange();
+    xhrInstances[2].responseText = bayLib;
+    xhrInstances[2].readyState = 4;
+    xhrInstances[2].onreadystatechange();
 
-    xhrInstance.responseText = bayCss;
-    xhrInstance.readyState = 4;
-    xhrInstance.onreadystatechange();
+    xhrInstances[3].responseText = bayCss;
+    xhrInstances[3].readyState = 4;
+    xhrInstances[3].onreadystatechange();
   }
 
   function reloadEnvironment() {
-    xhrUrls = [];
-    background(chrome, xhr, requestLogin, ENV);
+    xhrInstances = [];
+    background(chrome, xhr, requestLogin, ENV, require('async'));
   }
 
   // STUBBING VARIABLES
@@ -88,8 +88,7 @@ describe('Background', function() {
     , loggedInKey;
 
   var xhr
-    , xhrInstance
-    , xhrUrls
+    , xhrInstances
     , angularLib = 'angular'
     , angularResourceLib = 'angular-resource'
     , bayLib = 'library'
@@ -141,15 +140,16 @@ describe('Background', function() {
     }
 
     xhr = function() {}
+    xhrInstances = [];
 
     xhr.prototype = {
       open: function(method, url, async) {
-        xhrUrls.push(url);
+        this.url = url;
         expect(method).to.equal('GET');
         expect(async).to.equal(true);
       },
       send: function() {
-        xhrInstance = this;
+        xhrInstances.push(this);
       }
     }
 
@@ -168,25 +168,10 @@ describe('Background', function() {
     });
 
     it('uses the proper xhr urls', function() {
-      expect(xhrUrls[0]).to.equal('http://localhost:5999/javascripts/angular.min.js');
-      expect(xhrUrls[1]).to.equal('http://localhost:5999/javascripts/angular-resource.js');
-      expect(xhrUrls[2]).to.equal('http://localhost:5999/bay.js');
-      expect(xhrUrls[3]).to.equal('http://localhost:5999/bay.css');
-    });
-
-    describe('when CHROME_ENV is production', function() {
-      beforeEach(function() {
-        ENV.CHROME_ENV = 'production';
-        reloadEnvironment();
-        librariesLoaded();
-      });
-
-      it('uses the production urls', function() {
-        expect(xhrUrls[0]).to.equal('https://s3.amazonaws.com/kera-store/bay/javascripts/angular.min.js');
-        expect(xhrUrls[1]).to.equal('https://s3.amazonaws.com/kera-store/bay/javascripts/angular-resource.js');
-        expect(xhrUrls[2]).to.equal('https://s3.amazonaws.com/kera-store/bay/build.js');
-        expect(xhrUrls[3]).to.equal('https://s3.amazonaws.com/kera-store/bay/build.css');
-      });
+      expect(xhrInstances[0].url).to.equal('http://localhost:5999/javascripts/angular.min.js');
+      expect(xhrInstances[1].url).to.equal('http://localhost:5999/javascripts/angular-resource.js');
+      expect(xhrInstances[2].url).to.equal('http://localhost:5999/bay.js');
+      expect(xhrInstances[3].url).to.equal('http://localhost:5999/bay.css');
     });
 
     describe('tab updating', function() {
