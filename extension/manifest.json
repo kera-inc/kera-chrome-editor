@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Kera Editor",
   "description": "Edit Kera Walkthroughs",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "page_action": {
     "default_icon": "deactive.png"
   },
