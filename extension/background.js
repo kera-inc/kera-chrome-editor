@@ -1,17 +1,24 @@
 function init(chrome, XMLHttpRequest, requestLogin, ENV, async) {
+  var rootUrl = "";
+
   var URLs = {
-    production: {
-      ANGULAR: 'https://s3.amazonaws.com/kera-store/bay/1.0.1/javascripts/angular.min.js',
-      ANGULAR_RESOURCE: 'https://s3.amazonaws.com/kera-store/bay/1.0.1/javascripts/angular-resource.js',
-      BAY_LIB: 'https://s3.amazonaws.com/kera-store/bay/1.0.1/build.js',
-      BAY_CSS: 'https://s3.amazonaws.com/kera-store/bay/1.0.1/build.css'
+    rootUrl: '',
+    production: 'https://s3.amazonaws.com/kera-store/bay/latest.json',
+    development: 'http://localhost:5999/latest.json',
+
+    libs: {
+      ANGULAR: '/javascripts/angular.min.js',
+      ANGULAR_RESOURCE: '/javascripts/angular-resource.js',
+      BAY_LIB: '/build.js',
+      BAY_CSS: '/build.css'
     },
 
-    development: {
-      ANGULAR: 'http://localhost:5999/javascripts/angular.min.js',
-      ANGULAR_RESOURCE: 'http://localhost:5999/javascripts/angular-resource.js',
-      BAY_LIB: 'http://localhost:5999/bay.js',
-      BAY_CSS: 'http://localhost:5999/bay.css'
+    get: function(keyword) {
+      if (!this.rootUrl) {
+        throw new Error('rootUrl has not been set');
+      }
+
+      return this.rootUrl + this.libs[keyword];
     }
   };
 
@@ -23,30 +30,31 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV, async) {
     , scriptsLoaded = false
     , scriptsLoadedCallbacks = [];
 
-    async.map(['ANGULAR', 'ANGULAR_RESOURCE', 'BAY_LIB', 'BAY_CSS'], get, function(err, results) {
+  // MAIN METHOD
+  async.series([ getRootUrl, getLibraries, callDeferredScripts ]);
+
+  function getRootUrl(callback) {
+    console.log('Starting Kera Editor...');
+    console.log('* Getting root url');
+
+    get(URLs[ENV.CHROME_ENV], function(err, latest) {
+
       if (err) {
-        console.error(err);
+        callback(err);
         return;
       }
 
-      saveLibs(results);
+      var obj = JSON.parse(latest);
+      URLs.rootUrl = obj.url;
 
-      scriptsLoaded = true;
-      scriptsLoadedCallbacks.forEach(function(callback) {
-        callback();
-      });
+      console.log('* Root url found: ' + URLs.rootUrl);
+      callback();
     });
+  }
 
-    function saveLibs(results) {
-      angularLib = results[0];
-      angularResourceLib = results[1];
-      bayLib = results[2];
-      bayCss = results[3];
-    }
-
-  function get(keyword, callback) {
+  function get(url, callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', getUrl(keyword), true);
+    xhr.open('GET', url, true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
         callback(null, xhr.responseText);
@@ -55,8 +63,39 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV, async) {
     xhr.send();
   }
 
-  function getUrl(keyword) {
-    return URLs[ENV.CHROME_ENV][keyword];
+  function getLibraries(callback) {
+    console.log('* Loading libraries');
+    async.map([URLs.get('ANGULAR'), URLs.get('ANGULAR_RESOURCE'), URLs.get('BAY_LIB'), URLs.get('BAY_CSS')], get, function(err, results) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      saveLibs(results);
+
+      callback();
+    });
+  }
+
+  function saveLibs(results) {
+    console.log('* Saving libraries');
+
+    angularLib = results[0];
+    angularResourceLib = results[1];
+    bayLib = results[2];
+    bayCss = results[3];
+  }
+
+  function callDeferredScripts(callback) {
+    console.log('* Libraries saved. Booting injector');
+    scriptsLoaded = true;
+    scriptsLoadedCallbacks.forEach(function(cb) {
+      cb();
+    });
+
+    scriptsLoadedCallbacks = [];
+
+    callback();
   }
 
   chrome.tabs.onUpdated.addListener(function(tabId, details) {
@@ -85,6 +124,8 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV, async) {
   }
 
   function doInject(tabId, callback) {
+    console.log('Injecting scripts into tab: ' + tabId);
+
     chrome.tabs.insertCSS(tabId, { code: bayCss });
 
     chrome.tabs.executeScript(tabId, { code: angularLib + angularResourceLib + bayLib  }, function() {
@@ -119,8 +160,6 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV, async) {
   });
 
   chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-    debugger;
-
     if (request == 'requestLogin') {
       requestLogin(function(apiKey) {
         chrome.storage.sync.set({'apiKey': apiKey});

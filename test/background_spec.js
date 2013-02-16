@@ -57,21 +57,31 @@ describe('Background', function() {
   }
 
   function librariesLoaded() {
-    xhrInstances[0].responseText = angularLib;
+
+    // load first AJAX request which sets the rootUrl
+    var obj = { url: 'http://localhost:5999' };
+    var str = JSON.stringify(obj);
+
+    xhrInstances[0].responseText = str;
     xhrInstances[0].readyState = 4;
     xhrInstances[0].onreadystatechange();
 
-    xhrInstances[1].responseText = angularResourceLib;
+    // load libraries
+    xhrInstances[1].responseText = angularLib;
     xhrInstances[1].readyState = 4;
     xhrInstances[1].onreadystatechange();
 
-    xhrInstances[2].responseText = bayLib;
+    xhrInstances[2].responseText = angularResourceLib;
     xhrInstances[2].readyState = 4;
     xhrInstances[2].onreadystatechange();
 
-    xhrInstances[3].responseText = bayCss;
+    xhrInstances[3].responseText = bayLib;
     xhrInstances[3].readyState = 4;
     xhrInstances[3].onreadystatechange();
+
+    xhrInstances[4].responseText = bayCss;
+    xhrInstances[4].readyState = 4;
+    xhrInstances[4].onreadystatechange();
   }
 
   function reloadEnvironment() {
@@ -168,10 +178,10 @@ describe('Background', function() {
     });
 
     it('uses the proper xhr urls', function() {
-      expect(xhrInstances[0].url).to.equal('http://localhost:5999/javascripts/angular.min.js');
-      expect(xhrInstances[1].url).to.equal('http://localhost:5999/javascripts/angular-resource.js');
-      expect(xhrInstances[2].url).to.equal('http://localhost:5999/bay.js');
-      expect(xhrInstances[3].url).to.equal('http://localhost:5999/bay.css');
+      expect(xhrInstances[1].url).to.equal('http://localhost:5999/javascripts/angular.min.js');
+      expect(xhrInstances[2].url).to.equal('http://localhost:5999/javascripts/angular-resource.js');
+      expect(xhrInstances[3].url).to.equal('http://localhost:5999/build.js');
+      expect(xhrInstances[4].url).to.equal('http://localhost:5999/build.css');
     });
 
     describe('tab updating', function() {
