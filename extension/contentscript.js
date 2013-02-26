@@ -1,4 +1,4 @@
-function init(chrome, editor) {
+function init(chrome, documentElement, editor) {
   chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     if (!editor) {
       editor = require('bay');
@@ -26,10 +26,13 @@ function init(chrome, editor) {
       chrome.extension.sendMessage('logout');
     });
   });
+
+  documentElement.setAttribute('data-bay-installed', true);
 }
+
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = init;
 } else {
-  init(chrome);
+  init(chrome, document.documentElement);
 }

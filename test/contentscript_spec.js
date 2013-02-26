@@ -5,6 +5,8 @@ describe('ContentScript', function() {
 
   var editor;
 
+  var documentElement;
+
   var chrome
     , onMessageAddListenerCallback;
 
@@ -60,9 +62,17 @@ describe('ContentScript', function() {
 
         sendMessage: sinon.spy()
       }
-    }
+    };
 
-    contentscript(chrome, editor);
+    documentElement = {
+      setAttribute: sinon.spy()
+    };
+
+    contentscript(chrome, documentElement, editor);
+  });
+
+  it('sets data-bay-installed to true', function() {
+    expect(documentElement.setAttribute.calledWith('data-bay-installed', true)).to.equal(true);
   });
 
   describe('when activated and logged in', function() {
