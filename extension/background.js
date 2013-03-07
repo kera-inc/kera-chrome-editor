@@ -39,13 +39,19 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV, async) {
 
     get(URLs[ENV.CHROME_ENV], function(err, latest) {
 
+
       if (err) {
         callback(err);
         return;
       }
 
-      var obj = JSON.parse(latest);
-      URLs.rootUrl = obj.url;
+      /////------ HARD CODED TO THIS VERSION
+      if (ENV.CHROME_ENV === 'production') {
+        URLs.rootUrl = 'https://s3.amazonaws.com/kera-store/bay/1.1.13';
+      } else {
+        var obj = JSON.parse(latest);
+        URLs.rootUrl = obj.url;
+      }
 
       console.log('* Root url found: ' + URLs.rootUrl);
       callback();
