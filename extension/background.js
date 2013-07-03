@@ -47,7 +47,7 @@ function init(chrome, XMLHttpRequest, requestLogin, ENV, async) {
 
       /////------ HARD CODED TO THIS VERSION
       if (ENV.CHROME_ENV === 'production') {
-        URLs.rootUrl = 'https://s3.amazonaws.com/kera-store/bay/1.1.13';
+        URLs.rootUrl = 'https://s3.amazonaws.com/kera-store/bay/1.1.13.1';
       } else {
         var obj = JSON.parse(latest);
         URLs.rootUrl = obj.url;
